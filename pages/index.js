@@ -5,8 +5,6 @@ export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [lastUpdated, setLastUpdated] = useState(null);
-  const [loadTimes, setLoadTimes] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState(null);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -14,13 +12,6 @@ export default function Home() {
 
   // 获取图书数据
   const fetchBooks = useCallback(async (cursor = null, shouldAppend = false) => {
-    const timeStats = {
-      start: performance.now(),
-      cacheCheck: 0,
-      fetchStart: 0,
-      fetchEnd: 0
-    };
-
     try {
       if (!cursor) {
         setLoading(true);
@@ -28,45 +19,13 @@ export default function Home() {
         setLoadingMore(true);
       }
 
-      // 如果是第一页，先检查缓存
-      if (!cursor) {
-        const cacheKey = 'books_cache';
-        const cachedData = localStorage.getItem(cacheKey);
-        const cachedTime = localStorage.getItem(cacheKey + '_time');
-
-        timeStats.cacheCheck = performance.now();
-
-        // 首先显示缓存数据以提高用户体验
-        if (cachedData && cachedTime) {
-          const parsedCache = JSON.parse(cachedData);
-          setBooks(parsedCache.books || []);
-          setHasMore(parsedCache.hasMore || false);
-          setNextCursor(parsedCache.nextCursor || null);
-          setLastUpdated(new Date(parseInt(cachedTime)));
-
-          // 如果缓存时间少于5分钟，使用缓存并停止加载
-          if (Date.now() - parseInt(cachedTime) < 5 * 60 * 1000) {
-            setLoading(false);
-            timeStats.end = performance.now();
-            setLoadTimes({
-              total: Math.round(timeStats.end - timeStats.start),
-              cacheCheck: Math.round(timeStats.cacheCheck - timeStats.start),
-              source: "本地缓存"
-            });
-            return;
-          }
-        }
-      }
-
-      // 获取最新数据
-      timeStats.fetchStart = performance.now();
+      // 获取数据
       const url = `/api/books${cursor ? `?cursor=${cursor}` : ''}`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Failed to fetch books");
       }
       const data = await response.json();
-      timeStats.fetchEnd = performance.now();
 
       // 更新状态
       if (shouldAppend) {
@@ -77,22 +36,6 @@ export default function Home() {
 
       setHasMore(data.hasMore);
       setNextCursor(data.nextCursor);
-
-      // 只有首次加载时更新缓存
-      if (!cursor) {
-        localStorage.setItem('books_cache', JSON.stringify(data));
-        localStorage.setItem('books_cache_time', Date.now().toString());
-        setLastUpdated(new Date());
-
-        timeStats.end = performance.now();
-        setLoadTimes({
-          total: Math.round(timeStats.end - timeStats.start),
-          cacheCheck: Math.round(timeStats.cacheCheck - timeStats.start),
-          apiCall: Math.round(timeStats.fetchEnd - timeStats.fetchStart),
-          source: "API请求"
-        });
-      }
-
       setLoading(false);
       setLoadingMore(false);
     } catch (err) {
@@ -100,13 +43,6 @@ export default function Home() {
       setError(err.message);
       setLoading(false);
       setLoadingMore(false);
-
-      timeStats.end = performance.now();
-      setLoadTimes({
-        total: Math.round(timeStats.end - timeStats.start),
-        error: true,
-        source: "错误"
-      });
     }
   }, []);
 
@@ -159,15 +95,7 @@ export default function Home() {
     <div style={{ padding: "2rem" }}>
       <h1 style={{ marginBottom: "2rem" }}>阿西读书</h1>
 
-      {lastUpdated && (
-        <p style={{ fontSize: "0.8rem", color: "#666" }}>
-          最后更新: {formatDate(lastUpdated)}
-          {loading && " (正在刷新...)"}
-          {loadTimes && !loading && (
-            <span> - 加载耗时: {loadTimes.total}ms (来源: {loadTimes.source})</span>
-          )}
-        </p>
-      )}
+      {loading && <p style={{ fontSize: "0.8rem", color: "#666" }}>正在刷新...</p>}
 
       {books.length === 0 ? (
         <p>没有找到图书</p>
