@@ -6,14 +6,24 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [loadTimes, setLoadTimes] = useState(null);
 
   useEffect(() => {
     async function fetchBooks() {
+      const timeStats = {
+        start: performance.now(),
+        cacheCheck: 0,
+        fetchStart: 0,
+        fetchEnd: 0
+      };
+
       try {
         setLoading(true);
         const cacheKey = 'books_cache';
         const cachedData = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheKey + '_time');
+
+        timeStats.cacheCheck = performance.now();
 
         // 首先显示缓存数据以提高用户体验
         if (cachedData && cachedTime) {
@@ -23,27 +33,51 @@ export default function Home() {
           // 如果缓存时间少于5分钟，使用缓存并停止加载
           if (Date.now() - parseInt(cachedTime) < 5 * 60 * 1000) {
             setLoading(false);
+            timeStats.end = performance.now();
+            setLoadTimes({
+              total: Math.round(timeStats.end - timeStats.start),
+              cacheCheck: Math.round(timeStats.cacheCheck - timeStats.start),
+              source: "本地缓存"
+            });
             return;
           }
         }
 
         // 获取最新数据
+        timeStats.fetchStart = performance.now();
         const response = await fetch("/api/books");
         if (!response.ok) {
           throw new Error("Failed to fetch books");
         }
         const data = await response.json();
+        timeStats.fetchEnd = performance.now();
 
         // 更新状态和缓存
         setBooks(data);
         localStorage.setItem(cacheKey, JSON.stringify(data));
         localStorage.setItem(cacheKey + '_time', Date.now().toString());
         setLastUpdated(new Date());
+
+        timeStats.end = performance.now();
+        setLoadTimes({
+          total: Math.round(timeStats.end - timeStats.start),
+          cacheCheck: Math.round(timeStats.cacheCheck - timeStats.start),
+          apiCall: Math.round(timeStats.fetchEnd - timeStats.fetchStart),
+          source: "API请求"
+        });
+
         setLoading(false);
       } catch (err) {
         console.error("Error fetching books:", err);
         setError(err.message);
         setLoading(false);
+
+        timeStats.end = performance.now();
+        setLoadTimes({
+          total: Math.round(timeStats.end - timeStats.start),
+          error: true,
+          source: "错误"
+        });
       }
     }
 
@@ -74,6 +108,9 @@ export default function Home() {
         <p style={{ fontSize: "0.8rem", color: "#666" }}>
           最后更新: {formatDate(lastUpdated)}
           {loading && " (正在刷新...)"}
+          {loadTimes && !loading && (
+            <span> - 加载耗时: {loadTimes.total}ms (来源: {loadTimes.source})</span>
+          )}
         </p>
       )}
 
