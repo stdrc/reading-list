@@ -14,6 +14,7 @@ export default async function handler(req, res) {
     const { books, hasMore, nextCursor } = await getBookRecords(
       pageSizeNum,
       cursor,
+      ["完成", "归档"],
     );
 
     // 将Date对象转换为ISO字符串，以便在JSON中正确序列化

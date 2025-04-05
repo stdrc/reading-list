@@ -90,54 +90,22 @@ export default function Home({
   }
 
   return (
-    <div style={{ padding: "3rem", maxWidth: "1200px", margin: "0 auto" }}>
+    <div style={{ padding: "3rem", maxWidth: "764px", margin: "0 auto" }}>
       <h1 style={{ marginBottom: "3rem" }}>阿西读书</h1>
 
       {books.length === 0 ? (
         <p>没有找到图书</p>
       ) : (
         <div>
-          {/* 在读书籍 */}
-          <h2 style={{ marginTop: "3rem" }}>在读</h2>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "3rem",
-            }}
-          >
-            {books
-              .filter((book) => book.status === "进行")
-              .map((book, index) => (
-                <BookCard key={`reading-${index}`} book={book} />
-              ))}
-          </div>
-
-          {/* 读过的书籍 */}
           <h2 style={{ marginTop: "3rem" }}>读过</h2>
           <div
             style={{
               display: "flex",
               flexWrap: "wrap",
-              gap: "3rem",
+              gap: "36px",
             }}
           >
             {books
-              .filter(
-                (book) => book.status === "完成" || book.status === "归档",
-              )
-              .sort((a, b) => {
-                // 如果两本书都有ratingDate
-                if (a.ratingDate && b.ratingDate) {
-                  return new Date(b.ratingDate) - new Date(a.ratingDate);
-                }
-                // 如果只有a有ratingDate，a排在前面
-                if (a.ratingDate) return -1;
-                // 如果只有b有ratingDate，b排在前面
-                if (b.ratingDate) return 1;
-                // 如果都没有ratingDate，保持原顺序
-                return 0;
-              })
               .map((book, index) => (
                 <BookCard key={`finished-${index}`} book={book} />
               ))}
