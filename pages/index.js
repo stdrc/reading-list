@@ -5,16 +5,40 @@ export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     async function fetchBooks() {
       try {
+        setLoading(true);
+        const cacheKey = 'books_cache';
+        const cachedData = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheKey + '_time');
+
+        // 首先显示缓存数据以提高用户体验
+        if (cachedData && cachedTime) {
+          const parsedData = JSON.parse(cachedData);
+          setBooks(parsedData);
+          setLastUpdated(new Date(parseInt(cachedTime)));
+          // 如果缓存时间少于5分钟，使用缓存并停止加载
+          if (Date.now() - parseInt(cachedTime) < 5 * 60 * 1000) {
+            setLoading(false);
+            return;
+          }
+        }
+
+        // 获取最新数据
         const response = await fetch("/api/books");
         if (!response.ok) {
           throw new Error("Failed to fetch books");
         }
         const data = await response.json();
+
+        // 更新状态和缓存
         setBooks(data);
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+        localStorage.setItem(cacheKey + '_time', Date.now().toString());
+        setLastUpdated(new Date());
         setLoading(false);
       } catch (err) {
         console.error("Error fetching books:", err);
@@ -45,6 +69,13 @@ export default function Home() {
   return (
     <div style={{ padding: "2rem" }}>
       <h1 style={{ marginBottom: "2rem" }}>阿西读书</h1>
+
+      {lastUpdated && (
+        <p style={{ fontSize: "0.8rem", color: "#666" }}>
+          最后更新: {formatDate(lastUpdated)}
+          {loading && " (正在刷新...)"}
+        </p>
+      )}
 
       {books.length === 0 ? (
         <p>没有找到图书</p>
