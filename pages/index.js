@@ -90,21 +90,20 @@ export default function Home({
   }
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1 style={{ marginBottom: "2rem" }}>阿西读书</h1>
+    <div style={{ padding: "3rem", maxWidth: "1200px", margin: "0 auto" }}>
+      <h1 style={{ marginBottom: "3rem" }}>阿西读书</h1>
 
       {books.length === 0 ? (
         <p>没有找到图书</p>
       ) : (
         <div>
           {/* 在读书籍 */}
-          <h2 style={{ marginTop: "2rem" }}>在读</h2>
+          <h2 style={{ marginTop: "3rem" }}>在读</h2>
           <div
             style={{
-              display: "grid",
-              gap: "2rem",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              marginBottom: "3rem",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "3rem",
             }}
           >
             {books
@@ -115,12 +114,12 @@ export default function Home({
           </div>
 
           {/* 读过的书籍 */}
-          <h2 style={{ marginTop: "2rem" }}>读过</h2>
+          <h2 style={{ marginTop: "3rem" }}>读过</h2>
           <div
             style={{
-              display: "grid",
-              gap: "2rem",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "3rem",
             }}
           >
             {books
@@ -150,9 +149,7 @@ export default function Home({
               ref={loaderRef}
               style={{
                 textAlign: "center",
-                padding: "2rem",
-                margin: "2rem 0",
-                height: "80px", // 固定高度避免加载状态切换时的布局变化
+                padding: "3rem",
               }}
             >
               {loadingMore ? (
