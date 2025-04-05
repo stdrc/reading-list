@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import BookCard from "../components/BookCard";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { CHINESE_SANS_FONT_FAMILY } from "../lib/constants";
+import styles from "./index.module.css";
 
 export default function Home() {
   const [books, setBooks] = useState([]);
@@ -78,42 +78,24 @@ export default function Home() {
   }, [hasMore, loading, loadingMore, nextCursor, fetchBooks]);
 
   if (error && books.length === 0) {
-    return (
-      <div style={{ padding: "2rem", textAlign: "center", color: "red" }}>
-        错误: {error}
-      </div>
-    );
+    return <div className={styles.error}>错误: {error}</div>;
   }
 
   return (
-    <div
-      style={{
-        padding: "3rem",
-        maxWidth: "656px",
-        margin: "0 auto",
-      }}
-    >
-      <h1 style={{ marginBottom: "3rem", fontFamily: "LXGW WenKai" }}>
-        阿西读书
-      </h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>阿西读书</h1>
 
       <div>
-        <h2 style={{ margin: "36px 0", fontFamily: "LXGW WenKai" }}>读过</h2>
+        <h2 className={styles.sectionTitle}>读过</h2>
 
         {loading && books.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "2rem" }}>
+          <div className={styles.loadingContainer}>
             <LoadingSpinner />
           </div>
         ) : books.length === 0 ? (
-          <p>没有找到图书</p>
+          <p className={styles.emptyMessage}>没有找到图书</p>
         ) : (
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "36px",
-            }}
-          >
+          <div className={styles.booksGrid}>
             {books.map((book, index) => (
               <BookCard key={`finished-${index}`} book={book} />
             ))}
@@ -122,34 +104,16 @@ export default function Home() {
 
         {/* 加载更多指示器 */}
         {hasMore && (
-          <div
-            ref={loaderRef}
-            style={{
-              textAlign: "center",
-              padding: "3rem",
-            }}
-          >
+          <div ref={loaderRef} className={styles.loadMore}>
             {loadingMore ? <LoadingSpinner /> : <span>向下滚动加载更多</span>}
           </div>
         )}
       </div>
 
       {/* 页脚版权信息 */}
-      <footer
-        style={{
-          textAlign: "center",
-          marginTop: "3rem",
-          paddingTop: "2rem",
-          borderTop: "1px solid #eaeaea",
-          fontSize: "0.9rem",
-          opacity: "0.7",
-          fontFamily: CHINESE_SANS_FONT_FAMILY,
-        }}
-      >
-        <p style={{ margin: 0 }}>
-          © {new Date().getFullYear()} 阿西读书. All rights reserved.
-        </p>
-        <p style={{ margin: 0 }}>
+      <footer className={styles.footer}>
+        <p>© {new Date().getFullYear()} 阿西读书. All rights reserved.</p>
+        <p>
           Coded with vibe by <a href="https://github.com/stdrc">stdrc</a> and AI
           agents.
         </p>
