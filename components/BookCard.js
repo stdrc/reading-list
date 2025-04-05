@@ -8,6 +8,8 @@ export default function BookCard({ book }) {
         flexDirection: "column",
         gap: "0.8rem",
         width: "135px",
+        fontFamily:
+          '"PingFang SC","Microsoft YaHei","SimHei","Heiti SC","STHeiti","WenQuanYi Micro Hei",sans-serif',
       }}
     >
       <div
@@ -37,7 +39,7 @@ export default function BookCard({ book }) {
               padding: "2rem 1rem",
               display: "flex",
               flexDirection: "column",
-              gap: "0.4rem",
+              gap: "0.25rem",
               overflow: "hidden",
               alignItems: "flex-end",
               textAlign: "end",
@@ -69,7 +71,6 @@ export default function BookCard({ book }) {
           width: "100%",
           fontSize: "15px",
           fontWeight: "bold",
-          // textAlign: "center",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",

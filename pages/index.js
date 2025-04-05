@@ -29,7 +29,9 @@ export default function Home() {
       const data = await response.json();
 
       // 更新状态
-      setBooks((prevBooks) => cursor ? [...prevBooks, ...data.books] : data.books);
+      setBooks((prevBooks) =>
+        cursor ? [...prevBooks, ...data.books] : data.books,
+      );
       setHasMore(data.hasMore);
       setNextCursor(data.nextCursor);
       setLoading(false);
@@ -83,11 +85,19 @@ export default function Home() {
   }
 
   return (
-    <div style={{ padding: "3rem", maxWidth: "656px", margin: "0 auto" }}>
-      <h1 style={{ marginBottom: "3rem" }}>阿西读书</h1>
+    <div
+      style={{
+        padding: "3rem",
+        maxWidth: "656px",
+        margin: "0 auto",
+      }}
+    >
+      <h1 style={{ marginBottom: "3rem", fontFamily: "LXGW WenKai" }}>
+        阿西读书
+      </h1>
 
       <div>
-        <h2 style={{ marginTop: "3rem" }}>读过</h2>
+        <h2 style={{ margin: "36px 0", fontFamily: "LXGW WenKai" }}>读过</h2>
 
         {loading && books.length === 0 ? (
           <div style={{ textAlign: "center", padding: "2rem" }}>
@@ -118,11 +128,7 @@ export default function Home() {
               padding: "3rem",
             }}
           >
-            {loadingMore ? (
-              <LoadingSpinner />
-            ) : (
-              <span>向下滚动加载更多</span>
-            )}
+            {loadingMore ? <LoadingSpinner /> : <span>向下滚动加载更多</span>}
           </div>
         )}
       </div>
