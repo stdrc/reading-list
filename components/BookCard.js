@@ -1,6 +1,14 @@
 import { formatDate } from "../lib/notion-books";
 
 export default function BookCard({ book }) {
+  // 文本单行省略样式
+  const ellipsisStyle = {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    width: "100%"
+  };
+
   return (
     <div
       style={{
@@ -8,27 +16,14 @@ export default function BookCard({ book }) {
         borderRadius: "8px",
         padding: "1.5rem",
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        height: "250px", // 长边是高度
+        width: "156px", // 宽高比16:10，高250px对应宽156px
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
       }}
     >
-      <h2 style={{ marginTop: 0 }}>{book.name}</h2>
-      {book.authors.length > 0 && <p>作者: {book.authors.join(", ")}</p>}
-      {book.category && <p>分类: {book.category}</p>}
-      {book.rating && <p>评价: {book.rating}</p>}
-      {book.ratingDate && (
-        <p>评价日期: {formatDate(new Date(book.ratingDate))}</p>
-      )}
-      {book.url && (
-        <p>
-          <a
-            href={book.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: "#0070f3", textDecoration: "none" }}
-          >
-            查看链接
-          </a>
-        </p>
-      )}
+      <h2 style={{ marginTop: 0, ...ellipsisStyle }}>{book.name}</h2>
     </div>
   );
 }

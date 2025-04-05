@@ -44,11 +44,14 @@ export default function Home({
         setNextCursor(data.nextCursor);
         setLoading(false);
         setLoadingMore(false);
+
+        return data; // 返回数据以便链式调用
       } catch (err) {
         console.error("Error fetching books:", err);
         setError(err.message);
         setLoading(false);
         setLoadingMore(false);
+        throw err; // 抛出错误以便处理
       }
     },
     [],
@@ -67,7 +70,24 @@ export default function Home({
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
-          fetchBooks(nextCursor, true);
+          // 记录当前加载器相对于视口顶部的位置
+          const loaderPosition = entry.boundingClientRect.top;
+          // 记录文档当前高度
+          const oldScrollHeight = document.documentElement.scrollHeight;
+
+          fetchBooks(nextCursor, true).then(() => {
+            // 在数据加载完成后
+            setTimeout(() => {
+              // 计算文档高度变化
+              const newScrollHeight = document.documentElement.scrollHeight;
+              const heightDifference = newScrollHeight - oldScrollHeight;
+
+              // 调整滚动位置，保持加载器的相对位置
+              if (heightDifference > 0) {
+                window.scrollBy(0, heightDifference);
+              }
+            }, 0);
+          });
         }
       },
       { threshold: 0.5 },
@@ -156,6 +176,7 @@ export default function Home({
                 textAlign: "center",
                 padding: "2rem",
                 margin: "2rem 0",
+                height: "80px", // 固定高度避免加载状态切换时的布局变化
               }}
             >
               {loadingMore ? (
