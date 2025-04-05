@@ -1,17 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { formatDate } from "../lib/notion-books";
 import BookCard from "../components/BookCard";
 
-export default function Home({
-  initialBooks,
-  initialNextCursor,
-  initialHasMore,
-}) {
-  const [books, setBooks] = useState(initialBooks || []);
-  const [loading, setLoading] = useState(!initialBooks);
+export default function Home() {
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [hasMore, setHasMore] = useState(initialHasMore);
-  const [nextCursor, setNextCursor] = useState(initialNextCursor);
+  const [hasMore, setHasMore] = useState(false);
+  const [nextCursor, setNextCursor] = useState(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const loaderRef = useRef(null);
 
@@ -33,8 +28,7 @@ export default function Home({
       const data = await response.json();
 
       // 更新状态
-      setBooks((prevBooks) => [...prevBooks, ...data.books]);
-
+      setBooks((prevBooks) => cursor ? [...prevBooks, ...data.books] : data.books);
       setHasMore(data.hasMore);
       setNextCursor(data.nextCursor);
       setLoading(false);
@@ -50,12 +44,10 @@ export default function Home({
     }
   }, []);
 
-  // 首次加载 - 只有在没有初始数据时才执行
+  // 首次加载
   useEffect(() => {
-    if (!initialBooks) {
-      fetchBooks();
-    }
-  }, [fetchBooks, initialBooks]);
+    fetchBooks();
+  }, [fetchBooks]);
 
   // 无限滚动逻辑
   useEffect(() => {
@@ -93,11 +85,40 @@ export default function Home({
     <div style={{ padding: "3rem", maxWidth: "656px", margin: "0 auto" }}>
       <h1 style={{ marginBottom: "3rem" }}>阿西读书</h1>
 
-      {books.length === 0 ? (
-        <p>没有找到图书</p>
-      ) : (
-        <div>
-          <h2 style={{ marginTop: "3rem" }}>读过</h2>
+      <div>
+        <h2 style={{ marginTop: "3rem" }}>读过</h2>
+
+        {loading && books.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "2rem" }}>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              style={{
+                animation: "spin 1s linear infinite",
+                display: "inline-block",
+              }}
+            >
+              <style>{`
+                @keyframes spin {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+                }
+              `}</style>
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="#0070f3"
+                strokeWidth="4"
+                fill="none"
+                strokeDasharray="30 60"
+              />
+            </svg>
+          </div>
+        ) : books.length === 0 ? (
+          <p>没有找到图书</p>
+        ) : (
           <div
             style={{
               display: "flex",
@@ -109,83 +130,49 @@ export default function Home({
               <BookCard key={`finished-${index}`} book={book} />
             ))}
           </div>
+        )}
 
-          {/* 加载更多指示器 */}
-          {hasMore && (
-            <div
-              ref={loaderRef}
-              style={{
-                textAlign: "center",
-                padding: "3rem",
-              }}
-            >
-              {loadingMore ? (
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  style={{
-                    animation: "spin 1s linear infinite",
-                    display: "inline-block",
-                  }}
-                >
-                  <style>{`
-                    @keyframes spin {
-                      0% { transform: rotate(0deg); }
-                      100% { transform: rotate(360deg); }
-                    }
-                  `}</style>
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="#0070f3"
-                    strokeWidth="4"
-                    fill="none"
-                    strokeDasharray="30 60"
-                  />
-                </svg>
-              ) : (
-                <span>向下滚动加载更多</span>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+        {/* 加载更多指示器 */}
+        {hasMore && (
+          <div
+            ref={loaderRef}
+            style={{
+              textAlign: "center",
+              padding: "3rem",
+            }}
+          >
+            {loadingMore ? (
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                style={{
+                  animation: "spin 1s linear infinite",
+                  display: "inline-block",
+                }}
+              >
+                <style>{`
+                  @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                  }
+                `}</style>
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="#0070f3"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeDasharray="30 60"
+                />
+              </svg>
+            ) : (
+              <span>向下滚动加载更多</span>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
-}
-
-// 添加服务端数据预加载
-export async function getServerSideProps() {
-  try {
-    // 在服务端调用相同的API路由
-    const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-    const host = process.env.VERCEL_URL || "localhost:3000";
-    const url = `${protocol}://${host}/api/books`;
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("Failed to fetch books");
-    }
-
-    const data = await response.json();
-
-    return {
-      props: {
-        initialBooks: data.books,
-        initialNextCursor: data.nextCursor,
-        initialHasMore: data.hasMore,
-      },
-    };
-  } catch (error) {
-    console.error("Error in getServerSideProps:", error);
-    return {
-      props: {
-        initialBooks: [],
-        initialNextCursor: null,
-        initialHasMore: false,
-      },
-    };
-  }
 }
