@@ -6,20 +6,39 @@ export default function BookCard({ book }) {
       style={{
         border: "1px solid #eaeaea",
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        height: "240px",
-        width: "162px",
-        display: "flex",
-        flexDirection: "column",
+        height: "200px",
+        width: "135px",
         overflow: "hidden",
       }}
-      >
+    >
       <div
         style={{
-          padding: "1.5rem",
+          padding: "2rem 1rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.4rem",
+          overflow: "hidden",
+          alignItems: "flex-end",
+          textAlign: "end",
         }}
       >
-        <h2 style={{ marginTop: 0 }}>{book.name}</h2>
-        <p style={{ marginTop: 0 }}>{book.authors.join(", ")}</p>
+        <div
+          style={{
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          {book.name}
+        </div>
+
+        <div
+          style={{
+            marginTop: 0,
+            fontSize: "13px",
+          }}
+        >
+          {book.authors.join(", ")}
+        </div>
       </div>
     </div>
   );

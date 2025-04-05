@@ -90,7 +90,7 @@ export default function Home({
   }
 
   return (
-    <div style={{ padding: "3rem", maxWidth: "764px", margin: "0 auto" }}>
+    <div style={{ padding: "3rem", maxWidth: "656px", margin: "0 auto" }}>
       <h1 style={{ marginBottom: "3rem" }}>阿西读书</h1>
 
       {books.length === 0 ? (
@@ -105,10 +105,9 @@ export default function Home({
               gap: "36px",
             }}
           >
-            {books
-              .map((book, index) => (
-                <BookCard key={`finished-${index}`} book={book} />
-              ))}
+            {books.map((book, index) => (
+              <BookCard key={`finished-${index}`} book={book} />
+            ))}
           </div>
 
           {/* 加载更多指示器 */}
