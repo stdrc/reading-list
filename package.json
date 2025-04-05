@@ -1,0 +1,23 @@
+{
+  "name": "reading-list",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "format": "prettier --write \"**/*.{js,jsx,json}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.3.0",
+    "dotenv": "^16.4.7",
+    "next": "^14.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
