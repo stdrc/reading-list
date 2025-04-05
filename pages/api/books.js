@@ -11,7 +11,10 @@ export default async function handler(req, res) {
     const pageSizeNum = parseInt(pageSize, 10);
 
     // 获取书籍数据，支持分页
-    const { books, hasMore, nextCursor } = await getBookRecords(pageSizeNum, cursor);
+    const { books, hasMore, nextCursor } = await getBookRecords(
+      pageSizeNum,
+      cursor,
+    );
 
     // 将Date对象转换为ISO字符串，以便在JSON中正确序列化
     const serializedBooks = books.map((book) => ({
@@ -23,7 +26,7 @@ export default async function handler(req, res) {
     res.status(200).json({
       books: serializedBooks,
       hasMore,
-      nextCursor
+      nextCursor,
     });
   } catch (error) {
     console.error("API Error:", error);

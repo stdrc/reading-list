@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { formatDate } from "../lib/notion-books";
+import BookCard from "../components/BookCard";
 
-export default function Home({ initialBooks, initialNextCursor, initialHasMore }) {
+export default function Home({
+  initialBooks,
+  initialNextCursor,
+  initialHasMore,
+}) {
   const [books, setBooks] = useState(initialBooks || []);
   const [loading, setLoading] = useState(!initialBooks);
   const [error, setError] = useState(null);
@@ -11,40 +16,43 @@ export default function Home({ initialBooks, initialNextCursor, initialHasMore }
   const loaderRef = useRef(null);
 
   // 获取图书数据
-  const fetchBooks = useCallback(async (cursor = null, shouldAppend = false) => {
-    try {
-      if (!cursor) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
-      }
+  const fetchBooks = useCallback(
+    async (cursor = null, shouldAppend = false) => {
+      try {
+        if (!cursor) {
+          setLoading(true);
+        } else {
+          setLoadingMore(true);
+        }
 
-      // 获取数据
-      const url = `/api/books${cursor ? `?cursor=${cursor}` : ''}`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch books");
-      }
-      const data = await response.json();
+        // 获取数据
+        const url = `/api/books${cursor ? `?cursor=${cursor}` : ""}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch books");
+        }
+        const data = await response.json();
 
-      // 更新状态
-      if (shouldAppend) {
-        setBooks(prevBooks => [...prevBooks, ...data.books]);
-      } else {
-        setBooks(data.books);
-      }
+        // 更新状态
+        if (shouldAppend) {
+          setBooks((prevBooks) => [...prevBooks, ...data.books]);
+        } else {
+          setBooks(data.books);
+        }
 
-      setHasMore(data.hasMore);
-      setNextCursor(data.nextCursor);
-      setLoading(false);
-      setLoadingMore(false);
-    } catch (err) {
-      console.error("Error fetching books:", err);
-      setError(err.message);
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, []);
+        setHasMore(data.hasMore);
+        setNextCursor(data.nextCursor);
+        setLoading(false);
+        setLoadingMore(false);
+      } catch (err) {
+        console.error("Error fetching books:", err);
+        setError(err.message);
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    [],
+  );
 
   // 首次加载 - 只有在没有初始数据时才执行
   useEffect(() => {
@@ -56,13 +64,13 @@ export default function Home({ initialBooks, initialNextCursor, initialHasMore }
   // 无限滚动逻辑
   useEffect(() => {
     const observer = new IntersectionObserver(
-      entries => {
+      (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
           fetchBooks(nextCursor, true);
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
 
     const currentLoader = loaderRef.current;
@@ -104,39 +112,9 @@ export default function Home({ initialBooks, initialNextCursor, initialHasMore }
             }}
           >
             {books
-              .filter(book => book.status === "进行")
+              .filter((book) => book.status === "进行")
               .map((book, index) => (
-                <div
-                  key={`reading-${index}`}
-                  style={{
-                    border: "1px solid #eaeaea",
-                    borderRadius: "8px",
-                    padding: "1.5rem",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <h2 style={{ marginTop: 0 }}>{book.name}</h2>
-                  {book.authors.length > 0 && (
-                    <p>作者: {book.authors.join(", ")}</p>
-                  )}
-                  {book.category && <p>分类: {book.category}</p>}
-                  {book.rating && <p>评价: {book.rating}</p>}
-                  {book.ratingDate && (
-                    <p>评价日期: {formatDate(new Date(book.ratingDate))}</p>
-                  )}
-                  {book.url && (
-                    <p>
-                      <a
-                        href={book.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: "#0070f3", textDecoration: "none" }}
-                      >
-                        查看链接
-                      </a>
-                    </p>
-                  )}
-                </div>
+                <BookCard key={`reading-${index}`} book={book} />
               ))}
           </div>
 
@@ -150,7 +128,9 @@ export default function Home({ initialBooks, initialNextCursor, initialHasMore }
             }}
           >
             {books
-              .filter(book => book.status === "完成" || book.status === "归档")
+              .filter(
+                (book) => book.status === "完成" || book.status === "归档",
+              )
               .sort((a, b) => {
                 // 如果两本书都有ratingDate
                 if (a.ratingDate && b.ratingDate) {
@@ -164,37 +144,7 @@ export default function Home({ initialBooks, initialNextCursor, initialHasMore }
                 return 0;
               })
               .map((book, index) => (
-                <div
-                  key={`finished-${index}`}
-                  style={{
-                    border: "1px solid #eaeaea",
-                    borderRadius: "8px",
-                    padding: "1.5rem",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <h2 style={{ marginTop: 0 }}>{book.name}</h2>
-                  {book.authors.length > 0 && (
-                    <p>作者: {book.authors.join(", ")}</p>
-                  )}
-                  {book.category && <p>分类: {book.category}</p>}
-                  {book.rating && <p>评价: {book.rating}</p>}
-                  {book.ratingDate && (
-                    <p>评价日期: {formatDate(new Date(book.ratingDate))}</p>
-                  )}
-                  {book.url && (
-                    <p>
-                      <a
-                        href={book.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: "#0070f3", textDecoration: "none" }}
-                      >
-                        查看链接
-                      </a>
-                    </p>
-                  )}
-                </div>
+                <BookCard key={`finished-${index}`} book={book} />
               ))}
           </div>
 
@@ -203,9 +153,9 @@ export default function Home({ initialBooks, initialNextCursor, initialHasMore }
             <div
               ref={loaderRef}
               style={{
-                textAlign: 'center',
-                padding: '2rem',
-                margin: '2rem 0'
+                textAlign: "center",
+                padding: "2rem",
+                margin: "2rem 0",
               }}
             >
               {loadingMore ? (
@@ -214,8 +164,8 @@ export default function Home({ initialBooks, initialNextCursor, initialHasMore }
                   height="24"
                   viewBox="0 0 24 24"
                   style={{
-                    animation: 'spin 1s linear infinite',
-                    display: 'inline-block'
+                    animation: "spin 1s linear infinite",
+                    display: "inline-block",
                   }}
                 >
                   <style>{`
@@ -249,13 +199,13 @@ export default function Home({ initialBooks, initialNextCursor, initialHasMore }
 export async function getServerSideProps() {
   try {
     // 在服务端调用相同的API路由
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const host = process.env.VERCEL_URL || 'localhost:3000';
+    const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+    const host = process.env.VERCEL_URL || "localhost:3000";
     const url = `${protocol}://${host}/api/books`;
 
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error('Failed to fetch books');
+      throw new Error("Failed to fetch books");
     }
 
     const data = await response.json();
@@ -264,17 +214,17 @@ export async function getServerSideProps() {
       props: {
         initialBooks: data.books,
         initialNextCursor: data.nextCursor,
-        initialHasMore: data.hasMore
-      }
+        initialHasMore: data.hasMore,
+      },
     };
   } catch (error) {
-    console.error('Error in getServerSideProps:', error);
+    console.error("Error in getServerSideProps:", error);
     return {
       props: {
         initialBooks: [],
         initialNextCursor: null,
-        initialHasMore: false
-      }
+        initialHasMore: false,
+      },
     };
   }
 }
