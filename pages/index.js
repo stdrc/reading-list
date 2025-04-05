@@ -70,24 +70,7 @@ export default function Home({
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
-          // 记录当前加载器相对于视口顶部的位置
-          const loaderPosition = entry.boundingClientRect.top;
-          // 记录文档当前高度
-          const oldScrollHeight = document.documentElement.scrollHeight;
-
-          fetchBooks(nextCursor, true).then(() => {
-            // 在数据加载完成后
-            setTimeout(() => {
-              // 计算文档高度变化
-              const newScrollHeight = document.documentElement.scrollHeight;
-              const heightDifference = newScrollHeight - oldScrollHeight;
-
-              // 调整滚动位置，保持加载器的相对位置
-              if (heightDifference > 0) {
-                window.scrollBy(0, heightDifference);
-              }
-            }, 0);
-          });
+          fetchBooks(nextCursor, true);
         }
       },
       { threshold: 0.5 },
