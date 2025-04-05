@@ -8,7 +8,12 @@ export default async function handler(req, res) {
   const apiStart = Date.now();
 
   try {
-    const books = await getBookRecords();
+    // 获取分页参数
+    const { pageSize = 50, cursor } = req.query;
+    const pageSizeNum = parseInt(pageSize, 10);
+
+    // 获取书籍数据，支持分页
+    const { books, hasMore, nextCursor } = await getBookRecords(pageSizeNum, cursor);
 
     // 将Date对象转换为ISO字符串，以便在JSON中正确序列化
     const serializeStart = Date.now();
@@ -22,7 +27,12 @@ export default async function handler(req, res) {
     console.log(`[Performance] API总响应时间: ${Date.now() - apiStart}ms`);
     console.log(`[Performance] 返回图书数量: ${serializedBooks.length}`);
 
-    res.status(200).json(serializedBooks);
+    // 返回分页数据
+    res.status(200).json({
+      books: serializedBooks,
+      hasMore,
+      nextCursor
+    });
   } catch (error) {
     console.error("API Error:", error);
     console.log(`[Performance] API错误处理时间: ${Date.now() - apiStart}ms`);
