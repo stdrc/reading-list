@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import BookCard from "../components/BookCard";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { CHINESE_SANS_FONT_FAMILY } from "../lib/constants";
 
 export default function Home() {
   const [books, setBooks] = useState([]);
@@ -132,6 +133,27 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* 页脚版权信息 */}
+      <footer
+        style={{
+          textAlign: "center",
+          marginTop: "3rem",
+          paddingTop: "2rem",
+          borderTop: "1px solid #eaeaea",
+          fontSize: "0.9rem",
+          opacity: "0.7",
+          fontFamily: CHINESE_SANS_FONT_FAMILY,
+        }}
+      >
+        <p style={{ margin: 0 }}>
+          © {new Date().getFullYear()} 阿西读书. All rights reserved.
+        </p>
+        <p style={{ margin: 0 }}>
+          Coded with vibe by <a href="https://github.com/stdrc">stdrc</a> and AI
+          agents.
+        </p>
+      </footer>
     </div>
   );
 }

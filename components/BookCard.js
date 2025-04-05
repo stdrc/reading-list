@@ -1,4 +1,5 @@
 import { formatDate } from "../lib/notion-books";
+import { CHINESE_SANS_FONT_FAMILY } from "../lib/constants";
 
 export default function BookCard({ book }) {
   return (
@@ -8,8 +9,7 @@ export default function BookCard({ book }) {
         flexDirection: "column",
         gap: "0.8rem",
         width: "135px",
-        fontFamily:
-          '"PingFang SC","Microsoft YaHei","SimHei","Heiti SC","STHeiti","WenQuanYi Micro Hei",sans-serif',
+        fontFamily: CHINESE_SANS_FONT_FAMILY,
       }}
     >
       <div
