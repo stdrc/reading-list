@@ -16,46 +16,39 @@ export default function Home({
   const loaderRef = useRef(null);
 
   // 获取图书数据
-  const fetchBooks = useCallback(
-    async (cursor = null, shouldAppend = false) => {
-      try {
-        if (!cursor) {
-          setLoading(true);
-        } else {
-          setLoadingMore(true);
-        }
-
-        // 获取数据
-        const url = `/api/books${cursor ? `?cursor=${cursor}` : ""}`;
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Failed to fetch books");
-        }
-        const data = await response.json();
-
-        // 更新状态
-        if (shouldAppend) {
-          setBooks((prevBooks) => [...prevBooks, ...data.books]);
-        } else {
-          setBooks(data.books);
-        }
-
-        setHasMore(data.hasMore);
-        setNextCursor(data.nextCursor);
-        setLoading(false);
-        setLoadingMore(false);
-
-        return data; // 返回数据以便链式调用
-      } catch (err) {
-        console.error("Error fetching books:", err);
-        setError(err.message);
-        setLoading(false);
-        setLoadingMore(false);
-        throw err; // 抛出错误以便处理
+  const fetchBooks = useCallback(async (cursor = null) => {
+    try {
+      if (!cursor) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
       }
-    },
-    [],
-  );
+
+      // 获取数据
+      const url = `/api/books${cursor ? `?cursor=${cursor}` : ""}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch books");
+      }
+      const data = await response.json();
+
+      // 更新状态
+      setBooks((prevBooks) => [...prevBooks, ...data.books]);
+
+      setHasMore(data.hasMore);
+      setNextCursor(data.nextCursor);
+      setLoading(false);
+      setLoadingMore(false);
+
+      return data; // 返回数据以便链式调用
+    } catch (err) {
+      console.error("Error fetching books:", err);
+      setError(err.message);
+      setLoading(false);
+      setLoadingMore(false);
+      throw err; // 抛出错误以便处理
+    }
+  }, []);
 
   // 首次加载 - 只有在没有初始数据时才执行
   useEffect(() => {
@@ -70,7 +63,7 @@ export default function Home({
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
-          fetchBooks(nextCursor, true);
+          fetchBooks(nextCursor);
         }
       },
       { threshold: 0.5 },
