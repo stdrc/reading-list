@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { formatDate } from "../lib/notion-books";
 
-export default function Home() {
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function Home({ initialBooks, initialNextCursor, initialHasMore }) {
+  const [books, setBooks] = useState(initialBooks || []);
+  const [loading, setLoading] = useState(!initialBooks);
   const [error, setError] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [nextCursor, setNextCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [loadingMore, setLoadingMore] = useState(false);
   const loaderRef = useRef(null);
 
@@ -46,10 +46,12 @@ export default function Home() {
     }
   }, []);
 
-  // 首次加载
+  // 首次加载 - 只有在没有初始数据时才执行
   useEffect(() => {
-    fetchBooks();
-  }, [fetchBooks]);
+    if (!initialBooks) {
+      fetchBooks();
+    }
+  }, [fetchBooks, initialBooks]);
 
   // 无限滚动逻辑
   useEffect(() => {
@@ -75,14 +77,6 @@ export default function Home() {
     };
   }, [hasMore, loading, loadingMore, nextCursor, fetchBooks]);
 
-  if (loading && books.length === 0) {
-    return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        加载图书列表中...
-      </div>
-    );
-  }
-
   if (error && books.length === 0) {
     return (
       <div style={{ padding: "2rem", textAlign: "center", color: "red" }}>
@@ -94,8 +88,6 @@ export default function Home() {
   return (
     <div style={{ padding: "2rem" }}>
       <h1 style={{ marginBottom: "2rem" }}>阿西读书</h1>
-
-      {loading && <p style={{ fontSize: "0.8rem", color: "#666" }}>正在刷新...</p>}
 
       {books.length === 0 ? (
         <p>没有找到图书</p>
@@ -251,4 +243,38 @@ export default function Home() {
       )}
     </div>
   );
+}
+
+// 添加服务端数据预加载
+export async function getServerSideProps() {
+  try {
+    // 在服务端调用相同的API路由
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    const host = process.env.VERCEL_URL || 'localhost:3000';
+    const url = `${protocol}://${host}/api/books`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch books');
+    }
+
+    const data = await response.json();
+
+    return {
+      props: {
+        initialBooks: data.books,
+        initialNextCursor: data.nextCursor,
+        initialHasMore: data.hasMore
+      }
+    };
+  } catch (error) {
+    console.error('Error in getServerSideProps:', error);
+    return {
+      props: {
+        initialBooks: [],
+        initialNextCursor: null,
+        initialHasMore: false
+      }
+    };
+  }
 }
