@@ -33,13 +33,23 @@
 .date,
 .status {
   margin: 0.4rem 0;
-  color: #666;
+  color: #333;
   font-size: 1rem;
+  display: flex;
+  gap: 0.8em;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.value {
+  flex: 1;
+  text-align: left;
 }
 
 .rating {
-  font-weight: bold;
-  color: #333;
+  font-weight: normal;
 }
 
 .content {
@@ -118,5 +128,9 @@
 
   .info {
     width: 100%;
+  }
+
+  .bookName {
+    display: none;
   }
 }

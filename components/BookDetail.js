@@ -93,18 +93,32 @@ const BookDetail = memo(function BookDetail({ book }) {
 
         <div className={styles.info}>
           <h1 className={styles.bookName}>{book.name}</h1>
-          <p className={styles.authors}>作者: {book.authors.join(", ")}</p>
+          <p className={styles.authors}>
+            <span className={styles.label}>作者:</span>
+            <span className={styles.value}>{book.authors.join(", ")}</span>
+          </p>
           {book.category && (
-            <p className={styles.category}>分类: {book.category}</p>
+            <p className={styles.category}>
+              <span className={styles.label}>分类:</span>
+              <span className={styles.value}>{book.category}</span>
+            </p>
           )}
           <p className={styles.rating}>
-            {book.rating && `评价: ${book.rating}`}
-            {book.rating &&
-              book.ratingDate &&
-              ` (${formatDate(new Date(book.ratingDate))})`}
-            {!book.rating &&
-              book.ratingDate &&
-              `评价日期: ${formatDate(new Date(book.ratingDate))}`}
+            {book.rating && (
+              <>
+                <span className={styles.label}>评价:</span>
+                <span className={styles.value}>
+                  {book.rating}
+                  {book.ratingDate && ` (${formatDate(new Date(book.ratingDate))})`}
+                </span>
+              </>
+            )}
+            {!book.rating && book.ratingDate && (
+              <>
+                <span className={styles.label}>评价日期:</span>
+                <span className={styles.value}>{formatDate(new Date(book.ratingDate))}</span>
+              </>
+            )}
           </p>
         </div>
       </div>
