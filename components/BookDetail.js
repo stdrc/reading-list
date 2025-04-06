@@ -98,16 +98,18 @@ export default function BookDetail({ book }) {
         </div>
       </div>
 
-      <div className={styles.content}>
-        {notionContent ? (
+      {notionContent && notionContent.content ? (
+        <div className={styles.content}>
           <div
             className={styles.notionContent}
             dangerouslySetInnerHTML={{ __html: notionContent.content }}
           />
-        ) : (
+        </div>
+      ) : notionContent === null ? (
+        <div className={styles.content}>
           <div className={styles.noContent}>没有找到内容</div>
-        )}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 }

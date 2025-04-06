@@ -217,9 +217,15 @@ function richTextToHtml(richText) {
     if (text.annotations.strikethrough) content = `<s>${content}</s>`;
     if (text.annotations.code) content = `<code>${content}</code>`;
 
-    // 处理链接
+    // 处理链接，但跳过 Notion 页面链接
     if (text.href) {
-      content = `<a href="${text.href}" target="_blank" rel="noopener noreferrer">${content}</a>`;
+      // 检查链接是否指向 Notion 页面
+      const isNotionPageLink = text.href.includes("notion.so/") ||
+                              text.href.startsWith("/") && text.plain_text.trim() !== text.href;
+
+      if (!isNotionPageLink) {
+        content = `<a href="${text.href}" target="_blank" rel="noopener noreferrer">${content}</a>`;
+      }
     }
 
     html += content;
