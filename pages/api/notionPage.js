@@ -51,7 +51,7 @@ export default async function handler(req, res) {
     console.error("API Error:", error);
     res.status(500).json({
       message: "Failed to fetch Notion page",
-      error: error.message
+      error: error.message,
     });
   }
 }
@@ -94,6 +94,11 @@ async function blocksToHtml(blocks, notion) {
   return html;
 }
 
+// 检查富文本内容是否为空
+function isRichTextEmpty(richText) {
+  return !richText || richText.length === 0 || richText.every(text => !text.plain_text);
+}
+
 // 处理单个块
 async function blockToHtml(block, notion) {
   const { type, id } = block;
@@ -104,31 +109,58 @@ async function blockToHtml(block, notion) {
   // 根据块类型生成相应的 HTML
   switch (type) {
     case "paragraph":
+      if (isRichTextEmpty(block.paragraph.rich_text)) {
+        return "";
+      }
       return `<p>${richTextToHtml(block.paragraph.rich_text)}</p>\n`;
 
     case "heading_1":
+      if (isRichTextEmpty(block.heading_1.rich_text)) {
+        return "";
+      }
       return `<h1>${richTextToHtml(block.heading_1.rich_text)}</h1>\n`;
 
     case "heading_2":
+      if (isRichTextEmpty(block.heading_2.rich_text)) {
+        return "";
+      }
       return `<h2>${richTextToHtml(block.heading_2.rich_text)}</h2>\n`;
 
     case "heading_3":
+      if (isRichTextEmpty(block.heading_3.rich_text)) {
+        return "";
+      }
       return `<h3>${richTextToHtml(block.heading_3.rich_text)}</h3>\n`;
 
     case "bulleted_list_item":
+      if (isRichTextEmpty(block.bulleted_list_item.rich_text)) {
+        return "";
+      }
       return `<li>${richTextToHtml(block.bulleted_list_item.rich_text)}</li>\n`;
 
     case "numbered_list_item":
+      if (isRichTextEmpty(block.numbered_list_item.rich_text)) {
+        return "";
+      }
       return `<li>${richTextToHtml(block.numbered_list_item.rich_text)}</li>\n`;
 
     case "to_do":
-      const checked = block.to_do.checked ? 'checked' : '';
+      if (isRichTextEmpty(block.to_do.rich_text)) {
+        return "";
+      }
+      const checked = block.to_do.checked ? "checked" : "";
       return `<div><input type="checkbox" ${checked} disabled /> ${richTextToHtml(block.to_do.rich_text)}</div>\n`;
 
     case "quote":
+      if (isRichTextEmpty(block.quote.rich_text)) {
+        return "";
+      }
       return `<blockquote>${richTextToHtml(block.quote.rich_text)}</blockquote>\n`;
 
     case "code":
+      if (isRichTextEmpty(block.code.rich_text)) {
+        return "";
+      }
       return `<pre><code class="language-${block.code.language}">${richTextToHtml(block.code.rich_text)}</code></pre>\n`;
 
     case "image":
@@ -138,15 +170,19 @@ async function blockToHtml(block, notion) {
       } else if (block.image.type === "file") {
         imageUrl = block.image.file.url;
       }
-      const caption = block.image.caption && block.image.caption.length > 0
-        ? richTextToHtml(block.image.caption)
-        : "";
+      const caption =
+        block.image.caption && block.image.caption.length > 0
+          ? richTextToHtml(block.image.caption)
+          : "";
       return `<figure><img src="${imageUrl}" alt="${caption}" />${caption ? `<figcaption>${caption}</figcaption>` : ""}</figure>\n`;
 
     case "divider":
       return `<hr />\n`;
 
     case "callout":
+      if (isRichTextEmpty(block.callout.rich_text)) {
+        return "";
+      }
       return `<div class="callout"><div class="callout-emoji">${block.callout.icon?.emoji || ""}</div><div>${richTextToHtml(block.callout.rich_text)}</div></div>\n`;
 
     default:

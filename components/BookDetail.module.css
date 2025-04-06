@@ -58,8 +58,12 @@
   font-family: "LXGW WenKai";
 }
 
-.authors, .category, .rating, .date, .status {
-  margin: 0.5rem 0;
+.authors,
+.category,
+.rating,
+.date,
+.status {
+  margin: 0.4rem 0;
   color: #666;
   font-size: 1rem;
 }
@@ -71,7 +75,7 @@
 
 .content {
   border-top: 1px solid #eaeaea;
-  padding-top: 1rem;
+  padding-top: 2rem;
 }
 
 .notionContent {
@@ -80,7 +84,48 @@
   text-align: justify;
 }
 
-.loading, .error, .noContent {
+.notionContent > *:first-child {
+  margin-top: 0;
+}
+
+.notionContent > *:last-child {
+  margin-bottom: 0;
+}
+
+.notionContent h1,
+.notionContent h2,
+.notionContent h3 {
+  font-family: "LXGW WenKai";
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  text-align: left;
+}
+
+.notionContent p {
+  margin: 1em 0;
+}
+
+.notionContent ul,
+.notionContent ol {
+  padding-left: 1.5em;
+}
+
+.notionContent img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.notionContent blockquote {
+  border-left: 3px solid #eaeaea;
+  padding-left: 1em;
+  margin-left: 0;
+  color: #666;
+}
+
+.loading,
+.error,
+.noContent {
   padding: 2rem;
   text-align: center;
 }

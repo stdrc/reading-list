@@ -33,7 +33,9 @@
   flex-direction: column;
   font-family: var(--chinese-sans-font-family);
   transform: translateY(20px);
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .slideIn {
@@ -47,7 +49,7 @@
 }
 
 .modalHeader {
-  padding: 1.5rem;
+  padding: 1.5rem 2rem;
   border-bottom: 1px solid #eaeaea;
   display: flex;
   justify-content: space-between;
@@ -80,7 +82,7 @@
 }
 
 .modalContent {
-  padding: 1.5rem;
+  padding: 2rem;
   overflow-y: auto;
   line-height: 1.6;
 }
@@ -90,42 +92,4 @@
   justify-content: center;
   align-items: center;
   min-height: 200px;
-}
-
-/* 给 Notion 内容加一些基础样式 */
-.notionContent {
-  font-family: var(--chinese-sans-font-family);
-  color: #333;
-  text-align: justify;
-}
-
-.notionContent h1,
-.notionContent h2,
-.notionContent h3 {
-  font-family: "LXGW WenKai";
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-  text-align: left;
-}
-
-.notionContent p {
-  margin: 1em 0;
-}
-
-.notionContent ul,
-.notionContent ol {
-  padding-left: 1.5em;
-}
-
-.notionContent img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 4px;
-}
-
-.notionContent blockquote {
-  border-left: 3px solid #eaeaea;
-  padding-left: 1em;
-  margin-left: 0;
-  color: #666;
 }
