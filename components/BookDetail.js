@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, memo } from "react";
 import { formatDate } from "../lib/notion-books";
 import LoadingSpinner from "./LoadingSpinner";
 import styles from "./BookDetail.module.css";
-import ProxiedImage from "./ProxiedImage";
+import BookCover from "./BookCover";
 
 // 使用 React.memo 包装组件以避免不必要的重新渲染
 const BookDetail = memo(function BookDetail({ book }) {
@@ -89,25 +89,7 @@ const BookDetail = memo(function BookDetail({ book }) {
   return (
     <div className={styles.bookDetail}>
       <div className={styles.header}>
-        <div className={styles.coverContainer}>
-          {book.coverUrl ? (
-            <ProxiedImage
-              src={book.coverUrl}
-              width={135}
-              height={200}
-              dpr={2}
-              alt={book.name}
-              className={styles.coverImage}
-            />
-          ) : (
-            <div className={styles.fallbackCover}>
-              <div className={styles.bookTitle}>{book.name}</div>
-              <div className={styles.bookAuthors}>
-                {book.authors.join(", ")}
-              </div>
-            </div>
-          )}
-        </div>
+        <BookCover book={book} className={styles.detailCover} />
 
         <div className={styles.info}>
           <h1 className={styles.bookName}>{book.name}</h1>
