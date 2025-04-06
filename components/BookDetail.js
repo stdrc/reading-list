@@ -97,19 +97,19 @@ const BookDetail = memo(function BookDetail({ book }) {
         <div className={styles.info}>
           <h1 className={styles.bookName}>{book.name}</h1>
           <p className={styles.authors}>
-            <span className={styles.label}>作者:</span>
+            <span className={styles.label}>作者：</span>
             <span className={styles.value}>{book.authors.join(", ")}</span>
           </p>
           {book.category && (
             <p className={styles.category}>
-              <span className={styles.label}>分类:</span>
+              <span className={styles.label}>分类：</span>
               <span className={styles.value}>{book.category}</span>
             </p>
           )}
           <p className={styles.rating}>
             {book.rating && (
               <>
-                <span className={styles.label}>评价:</span>
+                <span className={styles.label}>评价：</span>
                 <span className={styles.value}>
                   {book.rating}
                   {book.ratingDate &&
