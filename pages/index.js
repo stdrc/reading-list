@@ -20,11 +20,19 @@ export default function Home() {
   const openBookDetail = (book) => {
     setSelectedBook(book);
     setIsModalOpen(true);
+    // 更新URL参数
+    const url = new URL(window.location);
+    url.searchParams.set('bookId', book.notionPageId);
+    window.history.replaceState({}, '', url);
   };
 
   // 关闭 Modal
   const closeBookDetail = () => {
     setIsModalOpen(false);
+    // 清除URL参数
+    const url = new URL(window.location);
+    url.searchParams.delete('bookId');
+    window.history.replaceState({}, '', url);
   };
 
   // 获取图书数据
@@ -63,10 +71,33 @@ export default function Home() {
     }
   }, []);
 
+  // 根据URL参数打开Modal
+  const checkUrlParams = useCallback(() => {
+    if (typeof window !== 'undefined' && books.length > 0) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const bookId = urlParams.get('bookId');
+
+      if (bookId) {
+        const book = books.find(b => b.notionPageId === bookId);
+        if (book) {
+          setSelectedBook(book);
+          setIsModalOpen(true);
+        }
+      }
+    }
+  }, [books]);
+
   // 首次加载
   useEffect(() => {
-    fetchBooks();
+    fetchBooks().then(() => {
+      checkUrlParams();
+    });
   }, [fetchBooks]);
+
+  // 当books数据加载后检查URL参数
+  useEffect(() => {
+    checkUrlParams();
+  }, [books, checkUrlParams]);
 
   // 无限滚动逻辑
   useEffect(() => {
