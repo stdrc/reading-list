@@ -113,7 +113,7 @@ const BookDetail = memo(function BookDetail({ book }) {
                 <span className={styles.value}>
                   {book.rating}
                   {book.ratingDate &&
-                    ` (${formatDate(new Date(book.ratingDate))})`}
+                    `（${formatDate(new Date(book.ratingDate))}）`}
                 </span>
               </>
             )}
