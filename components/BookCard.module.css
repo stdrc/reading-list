@@ -24,12 +24,15 @@
   text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
 }
 
-.bookCard:hover {
-  transform: translateY(-5px);
-}
+/* Only apply hover effects on devices that support hover */
+@media (hover: hover) {
+  .bookCard:hover {
+    transform: translateY(-5px);
+  }
 
-.bookCard:hover .coverWrapper > div:first-child {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  .bookCard:hover .coverWrapper > div:first-child {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
 }
 
 .bookCardTitle {
