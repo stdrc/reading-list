@@ -65,7 +65,6 @@
 .closeButton {
   background: none;
   border: none;
-  font-size: 1.8rem;
   cursor: pointer;
   color: #666;
   display: flex;
@@ -75,6 +74,7 @@
   height: 32px;
   border-radius: 50%;
   transition: background-color 0.2s ease;
+  padding: 0;
 }
 
 .closeButton:hover {
