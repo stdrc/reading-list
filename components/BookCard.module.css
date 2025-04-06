@@ -7,6 +7,10 @@
   transition: transform 0.2s ease-in-out;
 }
 
+.bookCover {
+  aspect-ratio: 135 / 200;
+}
+
 .bookCard:hover {
   transform: translateY(-5px);
 }

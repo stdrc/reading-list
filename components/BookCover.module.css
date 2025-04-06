@@ -2,7 +2,6 @@
   border: 1px solid #eaeaea;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
-  aspect-ratio: 135 / 200;
   overflow: hidden;
   display: flex;
   transition: box-shadow 0.2s ease-in-out;

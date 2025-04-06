@@ -11,7 +11,7 @@ export default function BookCard({ book, onClick }) {
 
   return (
     <div className={styles.bookCard} onClick={handleClick}>
-      <BookCover book={book} />
+      <BookCover book={book} className={styles.bookCover} />
 
       <div className={styles.bookCardTitle} title={book.name}>
         {book.name}
