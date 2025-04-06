@@ -24,9 +24,32 @@
 }
 
 .booksGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 36px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  font-size: 15px;
+  gap: 2.2em;
+}
+
+@media screen and (max-width: 680px) {
+  .container {
+    padding: 3rem 2rem;
+  }
+
+  .booksGrid {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .container {
+    padding: 3rem 1rem;
+  }
+
+  .booksGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    font-size: 13px;
+    gap: 1.5em;
+  }
 }
 
 .loadMore {

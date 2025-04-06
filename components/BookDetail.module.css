@@ -28,10 +28,10 @@
 
 .fallbackCover {
   width: 100%;
-  padding: 2rem 1rem;
+  padding: 20% 12%;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.25em;
   overflow: hidden;
   align-items: flex-end;
   text-align: end;
