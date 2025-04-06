@@ -15,6 +15,7 @@ export default function Home() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const loaderRef = useRef(null);
+  const initialFetchDone = useRef(false);
 
   // 打开书籍详情 Modal
   const openBookDetail = (book) => {
@@ -46,6 +47,7 @@ export default function Home() {
 
       // 获取数据
       const url = `/api/books${cursor ? `?cursor=${cursor}` : ""}`;
+      console.log('Fetching books with URL:', url); // 添加日志帮助调试
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Failed to fetch books");
@@ -87,24 +89,34 @@ export default function Home() {
     }
   }, [books]);
 
-  // 首次加载
+  // 仅在首次加载时获取数据
   useEffect(() => {
-    fetchBooks().then(() => {
-      checkUrlParams();
-    });
-  }, [fetchBooks]);
+    if (!initialFetchDone.current) {
+      console.log('Initial fetch');
+      fetchBooks();
+      initialFetchDone.current = true;
+    }
+  }, []); // 依赖为空数组
 
-  // 当books数据加载后检查URL参数
+  // 仅在 books 变化时检查 URL 参数，不会触发新的 API 调用
   useEffect(() => {
-    checkUrlParams();
+    if (books.length > 0) {
+      checkUrlParams();
+    }
   }, [books, checkUrlParams]);
 
   // 无限滚动逻辑
   useEffect(() => {
+    // 避免在组件首次渲染时触发额外的请求
+    if (!initialFetchDone.current) {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
+          console.log('Infinite scroll fetch');
           fetchBooks(nextCursor);
         }
       },

@@ -1,49 +1,78 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { formatDate } from "../lib/notion-books";
 import LoadingSpinner from "./LoadingSpinner";
 import styles from "./BookDetail.module.css";
 import ProxiedImage from "./ProxiedImage";
 
-export default function BookDetail({ book }) {
+// 使用 React.memo 包装组件以避免不必要的重新渲染
+const BookDetail = memo(function BookDetail({ book }) {
   const [notionContent, setNotionContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const fetchedPageIdRef = useRef(null);
+  const isLoadingRef = useRef(false);
 
   useEffect(() => {
+    if (!book || !book.notionPageId) {
+      setLoading(false);
+      setError("没有找到书籍页面 ID");
+      return;
+    }
+
+    if (fetchedPageIdRef.current === book.notionPageId || isLoadingRef.current) {
+      return;
+    }
+
+    const controller = new AbortController(); // 创建 AbortController 用于取消请求
+
     const fetchNotionContent = async () => {
       try {
+        isLoadingRef.current = true;
         setLoading(true);
 
-        // 检查是否有 notionPageId
-        if (!book.notionPageId) {
-          throw new Error("找不到有效的 Notion 页面 ID");
-        }
-
-        // 调用 API 获取页面内容
+        console.log('Fetching notion page:', book.notionPageId);
         const response = await fetch(
           `/api/notionPage?pageId=${book.notionPageId}`,
+          { signal: controller.signal } // 使用 signal 以便可以取消请求
         );
+
         if (!response.ok) {
           throw new Error("获取 Notion 页面内容失败");
         }
 
         const data = await response.json();
+
+        // 检查组件是否仍然挂载（通过 ref 值是否被清除判断）
+        if (controller.signal.aborted) {
+          return;
+        }
+
         setNotionContent(data);
+        fetchedPageIdRef.current = book.notionPageId;
         setLoading(false);
+        isLoadingRef.current = false;
       } catch (err) {
+        // 忽略已中止的请求错误
+        if (err.name === 'AbortError') {
+          console.log('Fetch aborted');
+          return;
+        }
+
         console.error("获取 Notion 内容错误:", err);
         setError(err.message);
         setLoading(false);
+        isLoadingRef.current = false;
       }
     };
 
-    if (book && book.notionPageId) {
-      fetchNotionContent();
-    } else {
-      setLoading(false);
-      setError("没有找到书籍页面 ID");
-    }
-  }, [book]);
+    fetchNotionContent();
+
+    // 清理函数，在组件卸载或依赖项变化时取消请求
+    return () => {
+      controller.abort();
+      isLoadingRef.current = false;
+    };
+  }, [book?.notionPageId]);
 
   if (loading) {
     return (
@@ -112,4 +141,6 @@ export default function BookDetail({ book }) {
       ) : null}
     </div>
   );
-}
+});
+
+export default BookDetail;
