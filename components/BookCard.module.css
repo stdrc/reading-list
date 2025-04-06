@@ -4,6 +4,16 @@
   gap: 0.8rem;
   width: 135px;
   font-family: var(--chinese-sans-font-family);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.bookCard:hover {
+  transform: translateY(-5px);
+}
+
+.bookCard:hover .imageContainer {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .imageContainer {
@@ -13,6 +23,7 @@
   width: 100%;
   overflow: hidden;
   display: flex;
+  transition: box-shadow 0.2s ease-in-out;
 }
 
 .coverImage {

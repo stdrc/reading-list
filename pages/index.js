@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import BookCard from "../components/BookCard";
+import BookDetail from "../components/BookDetail";
+import Modal from "../components/Modal";
 import LoadingSpinner from "../components/LoadingSpinner";
 import styles from "./index.module.css";
 
@@ -10,7 +12,20 @@ export default function Home() {
   const [hasMore, setHasMore] = useState(false);
   const [nextCursor, setNextCursor] = useState(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const loaderRef = useRef(null);
+
+  // 打开书籍详情 Modal
+  const openBookDetail = (book) => {
+    setSelectedBook(book);
+    setIsModalOpen(true);
+  };
+
+  // 关闭 Modal
+  const closeBookDetail = () => {
+    setIsModalOpen(false);
+  };
 
   // 获取图书数据
   const fetchBooks = useCallback(async (cursor = null) => {
@@ -97,7 +112,11 @@ export default function Home() {
         ) : (
           <div className={styles.booksGrid}>
             {books.map((book, index) => (
-              <BookCard key={`finished-${index}`} book={book} />
+              <BookCard
+                key={`finished-${index}`}
+                book={book}
+                onClick={openBookDetail}
+              />
             ))}
           </div>
         )}
@@ -109,6 +128,15 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* 书籍详情 Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeBookDetail}
+        title={selectedBook?.name || "书籍详情"}
+      >
+        {selectedBook && <BookDetail book={selectedBook} />}
+      </Modal>
 
       {/* 页脚版权信息 */}
       <footer className={styles.footer}>
