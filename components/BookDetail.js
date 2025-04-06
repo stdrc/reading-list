@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { formatDate } from "../lib/notion-books";
 import LoadingSpinner from "./LoadingSpinner";
 import styles from "./BookDetail.module.css";
+import ProxiedImage from "./ProxiedImage";
 
 export default function BookDetail({ book }) {
   const [notionContent, setNotionContent] = useState(null);
@@ -61,8 +62,11 @@ export default function BookDetail({ book }) {
       <div className={styles.header}>
         <div className={styles.coverContainer}>
           {book.coverUrl ? (
-            <img
-              src={`https://wsrv.nl/?url=${book.coverUrl}&w=135&h=200&dpr=2`}
+            <ProxiedImage
+              src={book.coverUrl}
+              width={135}
+              height={200}
+              dpr={2}
               alt={book.name}
               className={styles.coverImage}
             />
