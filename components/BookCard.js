@@ -9,9 +9,19 @@ export default function BookCard({ book, onClick }) {
     }
   };
 
+  // Get the first Unicode character of the rating if it exists
+  const ratingEmoji = book.rating ? Array.from(book.rating)[0] : null;
+
   return (
     <div className={styles.bookCard} onClick={handleClick}>
-      <BookCover book={book} className={styles.bookCover} />
+      <div className={styles.coverWrapper}>
+        <BookCover book={book} className={styles.bookCover} />
+        {ratingEmoji && (
+          <div className={styles.ratingBadge}>
+            {ratingEmoji}
+          </div>
+        )}
+      </div>
 
       <div className={styles.bookCardTitle} title={book.name}>
         {book.name}

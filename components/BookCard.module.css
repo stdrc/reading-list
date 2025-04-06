@@ -7,15 +7,28 @@
   transition: transform 0.2s ease-in-out;
 }
 
+.coverWrapper {
+  position: relative;
+}
+
 .bookCover {
   aspect-ratio: 135 / 200;
+}
+
+.ratingBadge {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 16px;
+  z-index: 10;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
 }
 
 .bookCard:hover {
   transform: translateY(-5px);
 }
 
-.bookCard:hover > div:first-child {
+.bookCard:hover .coverWrapper > div:first-child {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
