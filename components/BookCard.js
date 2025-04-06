@@ -13,7 +13,7 @@ export default function BookCard({ book, onClick }) {
       <div className={styles.imageContainer}>
         {book.coverUrl ? (
           <img
-            src={`https://wsrv.nl/?url=${book.coverUrl}&w=135&h=200`}
+            src={`https://wsrv.nl/?url=${book.coverUrl}&w=135&h=200&dpr=2`}
             alt={book.name}
             className={styles.coverImage}
           />

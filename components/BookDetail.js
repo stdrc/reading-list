@@ -19,7 +19,9 @@ export default function BookDetail({ book }) {
         }
 
         // 调用 API 获取页面内容
-        const response = await fetch(`/api/notionPage?pageId=${book.notionPageId}`);
+        const response = await fetch(
+          `/api/notionPage?pageId=${book.notionPageId}`,
+        );
         if (!response.ok) {
           throw new Error("获取 Notion 页面内容失败");
         }
@@ -60,14 +62,16 @@ export default function BookDetail({ book }) {
         <div className={styles.coverContainer}>
           {book.coverUrl ? (
             <img
-              src={`https://wsrv.nl/?url=${book.coverUrl}&w=135&h=200`}
+              src={`https://wsrv.nl/?url=${book.coverUrl}&w=135&h=200&dpr=2`}
               alt={book.name}
               className={styles.coverImage}
             />
           ) : (
             <div className={styles.fallbackCover}>
               <div className={styles.bookTitle}>{book.name}</div>
-              <div className={styles.bookAuthors}>{book.authors.join(", ")}</div>
+              <div className={styles.bookAuthors}>
+                {book.authors.join(", ")}
+              </div>
             </div>
           )}
         </div>
@@ -75,11 +79,17 @@ export default function BookDetail({ book }) {
         <div className={styles.info}>
           <h1 className={styles.bookName}>{book.name}</h1>
           <p className={styles.authors}>作者: {book.authors.join(", ")}</p>
-          {book.category && <p className={styles.category}>分类: {book.category}</p>}
+          {book.category && (
+            <p className={styles.category}>分类: {book.category}</p>
+          )}
           <p className={styles.rating}>
             {book.rating && `评价: ${book.rating}`}
-            {book.rating && book.ratingDate && ` (${formatDate(new Date(book.ratingDate))})`}
-            {!book.rating && book.ratingDate && `评价日期: ${formatDate(new Date(book.ratingDate))}`}
+            {book.rating &&
+              book.ratingDate &&
+              ` (${formatDate(new Date(book.ratingDate))})`}
+            {!book.rating &&
+              book.ratingDate &&
+              `评价日期: ${formatDate(new Date(book.ratingDate))}`}
           </p>
         </div>
       </div>

@@ -96,7 +96,11 @@ async function blocksToHtml(blocks, notion) {
 
 // 检查富文本内容是否为空
 function isRichTextEmpty(richText) {
-  return !richText || richText.length === 0 || richText.every(text => !text.plain_text);
+  return (
+    !richText ||
+    richText.length === 0 ||
+    richText.every((text) => !text.plain_text)
+  );
 }
 
 // 处理单个块
