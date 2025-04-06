@@ -30,12 +30,5 @@ export default function ProxiedImage({
   if (height) proxiedUrl += `&h=${height}`;
   if (dpr) proxiedUrl += `&dpr=${dpr}`;
 
-  return (
-    <img
-      src={proxiedUrl}
-      alt={alt}
-      className={className}
-      {...imgProps}
-    />
-  );
+  return <img src={proxiedUrl} alt={alt} className={className} {...imgProps} />;
 }

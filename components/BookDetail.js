@@ -19,7 +19,10 @@ const BookDetail = memo(function BookDetail({ book }) {
       return;
     }
 
-    if (fetchedPageIdRef.current === book.notionPageId || isLoadingRef.current) {
+    if (
+      fetchedPageIdRef.current === book.notionPageId ||
+      isLoadingRef.current
+    ) {
       return;
     }
 
@@ -30,10 +33,10 @@ const BookDetail = memo(function BookDetail({ book }) {
         isLoadingRef.current = true;
         setLoading(true);
 
-        console.log('Fetching notion page:', book.notionPageId);
+        console.log("Fetching notion page:", book.notionPageId);
         const response = await fetch(
           `/api/notionPage?pageId=${book.notionPageId}`,
-          { signal: controller.signal } // 使用 signal 以便可以取消请求
+          { signal: controller.signal }, // 使用 signal 以便可以取消请求
         );
 
         if (!response.ok) {
@@ -53,8 +56,8 @@ const BookDetail = memo(function BookDetail({ book }) {
         isLoadingRef.current = false;
       } catch (err) {
         // 忽略已中止的请求错误
-        if (err.name === 'AbortError') {
-          console.log('Fetch aborted');
+        if (err.name === "AbortError") {
+          console.log("Fetch aborted");
           return;
         }
 
@@ -109,14 +112,17 @@ const BookDetail = memo(function BookDetail({ book }) {
                 <span className={styles.label}>评价:</span>
                 <span className={styles.value}>
                   {book.rating}
-                  {book.ratingDate && ` (${formatDate(new Date(book.ratingDate))})`}
+                  {book.ratingDate &&
+                    ` (${formatDate(new Date(book.ratingDate))})`}
                 </span>
               </>
             )}
             {!book.rating && book.ratingDate && (
               <>
                 <span className={styles.label}>评价日期:</span>
-                <span className={styles.value}>{formatDate(new Date(book.ratingDate))}</span>
+                <span className={styles.value}>
+                  {formatDate(new Date(book.ratingDate))}
+                </span>
               </>
             )}
           </p>

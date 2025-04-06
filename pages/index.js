@@ -23,8 +23,8 @@ export default function Home() {
     setIsModalOpen(true);
     // 更新URL参数
     const url = new URL(window.location);
-    url.searchParams.set('bookId', book.notionPageId);
-    window.history.replaceState({}, '', url);
+    url.searchParams.set("bookId", book.notionPageId);
+    window.history.replaceState({}, "", url);
   };
 
   // 关闭 Modal
@@ -32,8 +32,8 @@ export default function Home() {
     setIsModalOpen(false);
     // 清除URL参数
     const url = new URL(window.location);
-    url.searchParams.delete('bookId');
-    window.history.replaceState({}, '', url);
+    url.searchParams.delete("bookId");
+    window.history.replaceState({}, "", url);
   };
 
   // 获取图书数据
@@ -47,7 +47,7 @@ export default function Home() {
 
       // 获取数据
       const url = `/api/books${cursor ? `?cursor=${cursor}` : ""}`;
-      console.log('Fetching books with URL:', url); // 添加日志帮助调试
+      console.log("Fetching books with URL:", url); // 添加日志帮助调试
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Failed to fetch books");
@@ -75,12 +75,12 @@ export default function Home() {
 
   // 根据URL参数打开Modal
   const checkUrlParams = useCallback(() => {
-    if (typeof window !== 'undefined' && books.length > 0) {
+    if (typeof window !== "undefined" && books.length > 0) {
       const urlParams = new URLSearchParams(window.location.search);
-      const bookId = urlParams.get('bookId');
+      const bookId = urlParams.get("bookId");
 
       if (bookId) {
-        const book = books.find(b => b.notionPageId === bookId);
+        const book = books.find((b) => b.notionPageId === bookId);
         if (book) {
           setSelectedBook(book);
           setIsModalOpen(true);
@@ -92,7 +92,7 @@ export default function Home() {
   // 仅在首次加载时获取数据
   useEffect(() => {
     if (!initialFetchDone.current) {
-      console.log('Initial fetch');
+      console.log("Initial fetch");
       fetchBooks();
       initialFetchDone.current = true;
     }
@@ -116,7 +116,7 @@ export default function Home() {
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
-          console.log('Infinite scroll fetch');
+          console.log("Infinite scroll fetch");
           fetchBooks(nextCursor);
         }
       },
