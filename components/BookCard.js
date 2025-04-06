@@ -16,11 +16,7 @@ export default function BookCard({ book, onClick }) {
     <div className={styles.bookCard} onClick={handleClick}>
       <div className={styles.coverWrapper}>
         <BookCover book={book} className={styles.bookCover} />
-        {ratingEmoji && (
-          <div className={styles.ratingBadge}>
-            {ratingEmoji}
-          </div>
-        )}
+        {ratingEmoji && <div className={styles.ratingBadge}>{ratingEmoji}</div>}
       </div>
 
       <div className={styles.bookCardTitle} title={book.name}>
