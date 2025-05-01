@@ -1,4 +1,5 @@
 import { getBookRecords } from "../../lib/notion-books";
+import bookCache from "../../lib/cache";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -22,7 +23,15 @@ export default async function handler(req, res) {
         break;
     }
 
-    // 获取书籍数据，支持分页
+    // 尝试从缓存获取数据
+    const cachedData = bookCache.getList(status, pageSizeNum, cursor);
+    if (cachedData) {
+      console.log(`[Cache] 使用缓存的书籍列表: ${status}`);
+      return res.status(200).json(cachedData);
+    }
+
+    console.log(`[Cache] 缓存未命中，从Notion获取书籍列表: ${status}`);
+    // 缓存未命中，从Notion获取书籍数据
     const { books, hasMore, nextCursor } = await getBookRecords(
       pageSizeNum,
       cursor,
@@ -35,12 +44,18 @@ export default async function handler(req, res) {
       ratingDate: book.ratingDate ? book.ratingDate.toISOString() : null,
     }));
 
-    // 返回分页数据
-    res.status(200).json({
+    // 构造响应数据
+    const responseData = {
       books: serializedBooks,
       hasMore,
       nextCursor,
-    });
+    };
+
+    // 存储到缓存
+    bookCache.setList(status, pageSizeNum, cursor, responseData);
+
+    // 返回分页数据
+    res.status(200).json(responseData);
   } catch (error) {
     console.error("API Error:", error);
     res.status(500).json({ message: "Failed to fetch books from Notion" });

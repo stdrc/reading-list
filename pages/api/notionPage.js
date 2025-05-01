@@ -1,4 +1,5 @@
 import { Client } from "@notionhq/client";
+import bookCache from "../../lib/cache";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -13,6 +14,15 @@ export default async function handler(req, res) {
   }
 
   try {
+    // 尝试从缓存获取数据
+    const cachedData = bookCache.getBookDetails(pageId);
+    if (cachedData) {
+      console.log(`[Cache] 使用缓存的书籍详情: ${pageId}`);
+      return res.status(200).json(cachedData.data);
+    }
+
+    console.log(`[Cache] 缓存未命中，从Notion获取书籍详情: ${pageId}`);
+
     // 初始化 Notion 客户端
     const notion = new Client({
       auth: process.env.NOTION_API_KEY,
@@ -42,11 +52,17 @@ export default async function handler(req, res) {
     // 将 Notion 块转换为 HTML
     const htmlContent = await blocksToHtml(blocks, notion);
 
-    // 返回页面内容
-    res.status(200).json({
+    // 构造响应数据
+    const responseData = {
       title: pageTitle,
       content: htmlContent,
-    });
+    };
+
+    // 将结果存入缓存
+    bookCache.setBookDetails(pageId, responseData);
+
+    // 返回页面内容
+    res.status(200).json(responseData);
   } catch (error) {
     console.error("API Error:", error);
     res.status(500).json({
