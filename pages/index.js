@@ -14,6 +14,7 @@ export default function Home() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("读过");
   const loaderRef = useRef(null);
   const initialFetchDone = useRef(false);
 
@@ -45,8 +46,13 @@ export default function Home() {
         setLoadingMore(true);
       }
 
+      // 映射标签为API状态参数
+      const status = activeTab === "读过" ? "finished" : "reading";
+
       // 获取数据
-      const url = `/api/books${cursor ? `?cursor=${cursor}` : ""}`;
+      const url = `/api/books${cursor ? `?cursor=${cursor}` : ""}${
+        cursor ? "&" : "?"
+      }status=${status}`;
       console.log("Fetching books with URL:", url); // 添加日志帮助调试
       const response = await fetch(url);
       if (!response.ok) {
@@ -71,7 +77,7 @@ export default function Home() {
       setLoadingMore(false);
       throw err; // 抛出错误以便处理
     }
-  }, []);
+  }, [activeTab]);
 
   // 根据URL参数打开Modal
   const checkUrlParams = useCallback(() => {
@@ -89,14 +95,25 @@ export default function Home() {
     }
   }, [books]);
 
-  // 仅在首次加载时获取数据
+  // 切换标签时重新获取数据
+  const handleTabChange = (tab) => {
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+      setBooks([]);
+      setNextCursor(null);
+      setHasMore(false);
+      initialFetchDone.current = false; // 重置初始加载标志
+    }
+  };
+
+  // 仅在首次加载时或标签变更时获取数据
   useEffect(() => {
     if (!initialFetchDone.current) {
       console.log("Initial fetch");
       fetchBooks();
       initialFetchDone.current = true;
     }
-  }, []); // 依赖为空数组
+  }, [activeTab, fetchBooks]);
 
   // 仅在 books 变化时检查 URL 参数，不会触发新的 API 调用
   useEffect(() => {
@@ -144,7 +161,25 @@ export default function Home() {
       <h1 className={styles.title}>阿西读书</h1>
 
       <div>
-        <h2 className={styles.sectionTitle}>读过</h2>
+        {/* 标签栏 */}
+        <div className={styles.tabBar}>
+          <button
+            className={`${styles.tabButton} ${
+              activeTab === "读过" ? styles.activeTab : ""
+            }`}
+            onClick={() => handleTabChange("读过")}
+          >
+            读过
+          </button>
+          <button
+            className={`${styles.tabButton} ${
+              activeTab === "在读" ? styles.activeTab : ""
+            }`}
+            onClick={() => handleTabChange("在读")}
+          >
+            在读
+          </button>
+        </div>
 
         {loading && books.length === 0 ? (
           <div className={styles.loadingContainer}>
@@ -156,7 +191,7 @@ export default function Home() {
           <div className={styles.booksGrid}>
             {books.map((book, index) => (
               <BookCard
-                key={`finished-${index}`}
+                key={`${activeTab}-${index}`}
                 book={book}
                 onClick={openBookDetail}
               />

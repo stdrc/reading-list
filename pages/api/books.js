@@ -6,15 +6,27 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 获取分页参数
-    const { pageSize = 50, cursor } = req.query;
+    // 获取分页参数和状态参数
+    const { pageSize = 50, cursor, status = "finished" } = req.query;
     const pageSizeNum = parseInt(pageSize, 10);
+
+    // 将status参数映射到Notion状态
+    let statusFilterArray;
+    switch (status) {
+      case "reading":
+        statusFilterArray = ["进行"];
+        break;
+      case "finished":
+      default:
+        statusFilterArray = ["完成", "归档"];
+        break;
+    }
 
     // 获取书籍数据，支持分页
     const { books, hasMore, nextCursor } = await getBookRecords(
       pageSizeNum,
       cursor,
-      ["完成", "归档"],
+      statusFilterArray,
     );
 
     // 将Date对象转换为ISO字符串，以便在JSON中正确序列化
