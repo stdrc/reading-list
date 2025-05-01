@@ -38,46 +38,49 @@ export default function Home() {
   };
 
   // 获取图书数据
-  const fetchBooks = useCallback(async (cursor = null) => {
-    try {
-      if (!cursor) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
+  const fetchBooks = useCallback(
+    async (cursor = null) => {
+      try {
+        if (!cursor) {
+          setLoading(true);
+        } else {
+          setLoadingMore(true);
+        }
+
+        // 映射标签为API状态参数
+        const status = activeTab === "读过" ? "finished" : "reading";
+
+        // 获取数据
+        const url = `/api/books${cursor ? `?cursor=${cursor}` : ""}${
+          cursor ? "&" : "?"
+        }status=${status}`;
+        console.log("Fetching books with URL:", url); // 添加日志帮助调试
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch books");
+        }
+        const data = await response.json();
+
+        // 更新状态
+        setBooks((prevBooks) =>
+          cursor ? [...prevBooks, ...data.books] : data.books,
+        );
+        setHasMore(data.hasMore);
+        setNextCursor(data.nextCursor);
+        setLoading(false);
+        setLoadingMore(false);
+
+        return data; // 返回数据以便链式调用
+      } catch (err) {
+        console.error("Error fetching books:", err);
+        setError(err.message);
+        setLoading(false);
+        setLoadingMore(false);
+        throw err; // 抛出错误以便处理
       }
-
-      // 映射标签为API状态参数
-      const status = activeTab === "读过" ? "finished" : "reading";
-
-      // 获取数据
-      const url = `/api/books${cursor ? `?cursor=${cursor}` : ""}${
-        cursor ? "&" : "?"
-      }status=${status}`;
-      console.log("Fetching books with URL:", url); // 添加日志帮助调试
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch books");
-      }
-      const data = await response.json();
-
-      // 更新状态
-      setBooks((prevBooks) =>
-        cursor ? [...prevBooks, ...data.books] : data.books,
-      );
-      setHasMore(data.hasMore);
-      setNextCursor(data.nextCursor);
-      setLoading(false);
-      setLoadingMore(false);
-
-      return data; // 返回数据以便链式调用
-    } catch (err) {
-      console.error("Error fetching books:", err);
-      setError(err.message);
-      setLoading(false);
-      setLoadingMore(false);
-      throw err; // 抛出错误以便处理
-    }
-  }, [activeTab]);
+    },
+    [activeTab],
+  );
 
   // 根据URL参数打开Modal
   const checkUrlParams = useCallback(() => {
